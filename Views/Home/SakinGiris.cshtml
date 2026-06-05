@@ -1,0 +1,48 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sakin Paneli - AYS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div style="margin-bottom: 15px;">
+            <a href="/Home/Welcome" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-arrow-left"></i> Geri Dön
+            </a>
+        </div>
+        <h2 style="text-align:center; color:white; margin-bottom:20px; font-weight:600;">Sakin Paneli</h2>
+        
+        <div class="auth-tabs" style="display: flex; margin-bottom: 25px; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 5px;">
+            <button id="tabLogin" onclick="showForm('login')" style="flex:1; background:#4ade80; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; color:#0f172a;">Giriş Yap</button>
+            <button id="tabRegister" onclick="showForm('register')" style="flex:1; background:none; border:none; color:white; padding:10px; cursor:pointer; font-weight:600;">Kayıt Ol</button>
+        </div>
+
+        <form id="sakinLoginForm">
+            <div class="input-group"><input type="text" name="AdSoyad" placeholder="Ad Soyad" required></div>
+            <div class="input-group"><input type="text" name="KullaniciAdi" placeholder="Kullanıcı Adı" required></div>
+            <div class="input-group"><input type="password" name="Sifre" placeholder="Şifre" required></div>
+            <button type="submit" class="login-btn" style="background:#4ade80; color:#0f172a;">Giriş Yap</button>
+        </form>
+
+        <form id="sakinRegisterForm" style="display:none;">
+            <div class="input-group"><input type="text" name="AdSoyad" placeholder="Ad Soyad" required></div>
+            <div class="input-group"><input type="text" name="KullaniciAdi" placeholder="Kullanıcı Adı" required></div>
+            <div class="input-group"><input type="password" name="Sifre" placeholder="Şifre" required></div>
+            <div class="input-group"><input type="number" name="KapiNo" placeholder="Kapı No" required></div>
+            <div class="input-group"><input type="tel" name="Telefon" placeholder="Telefon" required></div>
+            <div class="input-group"><input type="email" name="Email" placeholder="E-posta" required></div>
+            <button type="submit" class="login-btn" style="background:#4ade80; color:#0f172a;">Kaydol</button>
+        </form>
+
+        <p id="sakinMessage" style="margin-top:20px; text-align:center; min-height: 24px; font-size: 0.9rem; font-weight: 600;"></p>
+    </div>
+    <script src="/js/sakin_auth.js"></script>
+</body>
+</html>

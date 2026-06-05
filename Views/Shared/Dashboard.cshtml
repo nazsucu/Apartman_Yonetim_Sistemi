@@ -1,0 +1,82 @@
+﻿@using ApartmanYonetimSistemi.Models
+@model List<ApartmanYonetimSistemi.Models.GenelTalep>
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="dashboard-container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e0e7ff; color: #4f46e5;"><i class="fas fa-building"></i></div>
+            <div class="stat-info">
+                <span style="color:#94a3b8; font-size:0.8rem;">Toplam Daire</span>
+                <h3>@ViewBag.ToplamDaire</h3>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fas fa-wallet"></i></div>
+            <div class="stat-info">
+                <span style="color:#94a3b8; font-size:0.8rem;">Aidat Durumu</span>
+                <h3>%@ViewBag.AidatYuzde</h3>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fef9c3; color: #ca8a04;"><i class="fas fa-lira-sign"></i></div>
+            <div class="stat-info">
+                <span style="color:#94a3b8; font-size:0.8rem;">Kasa</span>
+                <h3>₺@ViewBag.Kasa</h3>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fee2e2; color: #dc2626;"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="stat-info">
+                <span style="color:#94a3b8; font-size:0.8rem;">Bekleyen Talep</span>
+                <h3>@ViewBag.BekleyenTalep</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-card" style="margin-top:25px;">
+        <div class="card-header"><h4 style="color:#1e293b;"><i class="fas fa-list" style="color:#4f46e5;"></i> Son Genel Talepler</h4></div>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Sakin</th>
+                    <th>Konu</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var talep in Model)
+                {
+                    <tr>
+                        <td>@talep.SakinAd</td>
+                        <td>@talep.Konu</td>
+                        <td>@talep.Tarih.ToShortDateString()</td>
+                        <td>
+                            @if (!talep.OkunduMu)
+                            {
+                                <span class="status-badge warning" style="background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:5px;">Yeni</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge success" style="background:#dcfce7; color:#16a34a; padding:3px 8px; border-radius:5px;">Okundu</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="4" style="text-align:center; color:#94a3b8; padding:20px;">Henüz bir genel talep bulunmuyor.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

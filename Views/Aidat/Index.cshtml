@@ -1,0 +1,190 @@
+﻿@model List<ApartmanYonetimSistemi.Models.Aidat>
+@{
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .form-control-custom {
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        outline: none;
+        display: block;
+    }
+    .form-control-custom:focus { 
+        border-color: #4f46e5; 
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); 
+    }
+    
+    .btn-submit-blue {
+        padding: 10px 20px;
+        background: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s;
+        width: 100%;
+    }
+    .btn-submit-blue:hover { background: #3730a3; }
+
+    .btn-submit-orange {
+        padding: 10px 20px;
+        background: #f59e0b;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s;
+        width: 100%;
+    }
+    .btn-submit-orange:hover { background: #d97706; }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #475569;
+    }
+</style>
+
+@if (TempData["Mesaj"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({ title: 'Başarılı!', text: '@Html.Raw(TempData["Mesaj"])', icon: 'success', confirmButtonColor: '#4f46e5' });
+        });
+    </script>
+}
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+    
+    <div class="data-card" style="border-top: 4px solid #4f46e5;">
+        <h5 style="margin-bottom:15px;"><i class="fas fa-users" style="color: #4f46e5;"></i> Tümüne Aidat Yaz</h5>
+        <form asp-action="TopluAidatEkle" method="post">
+            <label class="form-label">Tutar (₺)</label>
+            <input type="number" name="tutar" placeholder="Örn: 500" class="form-control-custom" required />
+            
+            <label class="form-label">Dönem / Ay</label>
+            <input type="text" name="ay" placeholder="Örn: Mayıs 2026" class="form-control-custom" required />
+            
+            <button type="submit" class="btn-submit-blue">
+                <i class="fas fa-check-double"></i> Tümüne Borç Ekle
+            </button>
+        </form>
+    </div>
+
+    <div class="data-card" style="border-top: 4px solid #f59e0b;">
+        <h5 style="margin-bottom:15px;"><i class="fas fa-user-tag" style="color: #f59e0b;"></i> Kişiye Özel Borç Yaz</h5>
+        <form asp-action="TekliAidatEkle" method="post">
+            <label class="form-label">Sakin Seçin</label>
+            <select name="sakinAd" class="form-control-custom" required>
+                <option value="">-- Sakin Seçiniz --</option>
+                @if (ViewBag.Sakinler != null)
+                {
+                    foreach (var s in ViewBag.Sakinler)
+                    {
+                        <option value="@(s.GetType().GetProperty("AdSoyad") != null ? s.AdSoyad : s)">
+                            @(s.GetType().GetProperty("AdSoyad") != null ? s.AdSoyad : s)
+                        </option>
+                    }
+                }
+            </select>
+
+            <label class="form-label">Tutar (₺)</label>
+            <input type="number" name="tutar" placeholder="Örn: 750" class="form-control-custom" required />
+
+            <label class="form-label">Açıklama / Dönem</label>
+            <input type="text" name="ay" placeholder="Örn: Ek Borç / Tamirat" class="form-control-custom" required />
+
+            <button type="submit" class="btn-submit-orange">
+                <i class="fas fa-user-plus"></i> Sadece Bu Kişiye Yaz
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="data-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h4><i class="fas fa-file-invoice-dollar"></i> Aidat Takip Listesi</h4>
+        <form method="get" action="/Aidat/Index">
+            <input type="text" name="search" placeholder="İsim veya dönem ara..." style="padding:8px; border-radius:6px; border:1px solid #cbd5e1; outline:none;" />
+        </form>
+    </div>
+
+    <table class="custom-table" style="width:100%;">
+        <thead>
+            <tr style="text-align:left; border-bottom: 2px solid #f1f5f9;">
+                <th style="padding:12px;">Sakin</th>
+                <th style="padding:12px;">Dönem</th>
+                <th style="padding:12px;">Tutar</th>
+                <th style="padding:12px;">Durum</th>
+                <th style="padding:12px; text-align:right;">İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model)
+            {
+                <tr style="border-bottom: 1px solid #f8fafc;">
+                    <td style="padding:12px;"><b>@a.SakinAdSoyad</b></td>
+                    <td style="padding:12px;">@a.Ay</td>
+                    <td style="padding:12px;">₺@a.Tutar.ToString("N2")</td>
+                    <td style="padding:12px;">
+                        @if (a.OdendiMi)
+                        {
+                            <span style="background:#dcfce7; color:#16a34a; padding:4px 8px; border-radius:5px; font-size:0.8rem; font-weight:600;">Ödendi</span>
+                        }
+                        else
+                        {
+                            <span style="background:#fef9c3; color:#ca8a04; padding:4px 8px; border-radius:5px; font-size:0.8rem; font-weight:600;">Bekliyor</span>
+                        }
+                    </td>
+                    <td style="padding:12px; text-align:right;">
+                        @if (!a.OdendiMi)
+                        {
+                            <a href="/Aidat/OdendiYap/@a.Id" style="color:#4f46e5; text-decoration:none; margin-right:15px; font-weight:600;">
+                                <i class="fas fa-check"></i> Onayla
+                            </a>
+                        }
+                        <a href="javascript:void(0)" onclick="silOnay(@a.Id)" style="color:#ef4444; font-weight:600; text-decoration:none;">
+                            <i class="fas fa-trash"></i> Sil
+                        </a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">Kayıtlı aidat bulunamadı.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function silOnay(id) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu aidat kaydı kalıcı olarak silinecektir!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#4f46e5',
+            cancelButtonColor: '#ef4444',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Aidat/Sil/" + id;
+            }
+        })
+    }
+</script>

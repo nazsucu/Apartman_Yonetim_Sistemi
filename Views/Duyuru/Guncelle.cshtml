@@ -1,0 +1,23 @@
+﻿@model ApartmanYonetimSistemi.Models.Duyuru
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="data-card">
+    <h4><i class="fas fa-edit"></i> Duyuruyu Düzenle</h4>
+    <form asp-action="Guncelle" method="post" style="margin-top:20px;">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="YayinTarihi" />
+        
+        <div style="margin-bottom:15px;">
+            <label>Başlık</label>
+            <input type="text" asp-for="Baslik" class="form-control" style="width:100%; padding:10px;" required />
+        </div>
+        <div style="margin-bottom:15px;">
+            <label>İçerik</label>
+            <textarea asp-for="Icerik" rows="5" class="form-control" style="width:100%; padding:10px;" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="padding:10px 20px; background:#4f46e5; color:white; border:none; border-radius:8px;">Güncelle</button>
+        <a href="/Duyuru/Index" style="margin-left:15px; color:#64748b; text-decoration:none;">İptal</a>
+    </form>
+</div>

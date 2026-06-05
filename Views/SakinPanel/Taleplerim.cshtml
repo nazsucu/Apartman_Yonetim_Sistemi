@@ -1,0 +1,128 @@
+﻿@using ApartmanYonetimSistemi.Data
+@model List<GenelTalep>
+@{
+    Layout = "_SakinLayout";
+}
+
+<style>
+    .talep-card {
+        border: 1px solid #e2e8f0 !important;
+        padding: 20px !important;
+        border-radius: 12px !important;
+        margin-bottom: 15px !important;
+        background: #ffffff !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+        .talep-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+        }
+
+    .form-input-custom {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        outline: none;
+        font-family: inherit;
+        font-size: 0.9rem;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+    }
+
+        .form-input-custom:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+</style>
+
+<div class="data-card" style="background:white; padding:30px; border-radius:15px; border:1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+        <h4 style="color:#1e293b; font-size: 1.25rem; font-weight: 700; margin:0; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-envelope" style="color:#4f46e5;"></i> Genel Taleplerim
+        </h4>
+        <button onclick="document.getElementById('talepModal').style.display='flex'"
+                style="background:#4f46e5; color:white; border:none; padding:12px 24px; border-radius:10px; cursor:pointer; font-weight:600; font-size: 0.9rem; transition: background 0.2s; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-plus"></i> Yeni Talep Oluştur
+        </button>
+    </div>
+
+    @foreach (var t in Model)
+    {
+        <div class="talep-card">
+            <div style="display:flex; justify-content:space-between; align-items: center;">
+                <strong style="color:#1e293b; font-size:1.1rem; font-weight: 600;">@t.Konu</strong>
+                <span style="font-size:0.8rem; color:#94a3b8; font-weight: 500; background: #f8fafc; padding: 4px 10px; border-radius: 6px;">
+                    <i class="far fa-calendar-alt"></i> @t.Tarih.ToShortDateString()
+                </span>
+            </div>
+            <p style="color:#475569; margin-top:12px; margin-bottom: 0; font-size: 0.95rem; line-height: 1.5; white-space: pre-line;">@t.Mesaj</p>
+            
+            @if (!string.IsNullOrEmpty(t.YoneticiCevap))
+            {
+               
+                <div style="background:#f0fdf4; padding:15px 18px; border-left:4px solid #16a34a; margin-top:18px; border-radius: 0 10px 10px 0; border-top: 1px solid #dcfce7; border-right: 1px solid #dcfce7; border-bottom: 1px solid #dcfce7;">
+                    <small style="color:#16a34a; font-weight:700; display:flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 0.75rem; letter-spacing: 0.5px;">
+                        <i class="fas fa-reply"></i> YÖNETİM YANITI
+                    </small>
+                    <p style="margin:0; color:#14532d; font-size: 0.92rem; line-height: 1.5;">@t.YoneticiCevap</p>
+                </div>
+            }
+            else
+            {
+                <div style="margin-top: 15px; display: flex; align-items: center;">
+                    <span style="font-size:0.8rem; color:#d97706; font-weight:600; background: #fffbeb; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-clock"></i> Henüz yanıtlanmadı
+                    </span>
+                </div>
+            }
+        </div>
+    }
+    
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+            <i class="fas fa-folder-open" style="font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: 12px;"></i>
+            Henüz oluşturulmuş bir genel talebiniz bulunmuyor.
+        </div>
+    }
+</div>
+
+<div id="talepModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(3px); align-items:center; justify-content:center;">
+    <div style="background:white; padding:30px; border-radius:16px; width:90%; max-width:500px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+        <h3 style="margin-top:0; margin-bottom: 20px; color: #1e293b; font-size: 1.25rem; font-weight: 700;">Yeni Genel Talep</h3>
+        
+        <form asp-action="TalepKaydet" asp-controller="SakinPanel" method="post" style="display: flex; flex-direction: column; gap: 16px;">
+            <input type="hidden" name="kategori" value="Genel" />
+            
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: #64748b; font-weight: 600;">Konu</label>
+                <input type="text" name="baslik" required placeholder="Talebinizin konusu nedir?" class="form-input-custom">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: #64748b; font-weight: 600;">Mesajınız</label>
+                <textarea name="aciklama" rows="5" required placeholder="Talebinizi detaylıca buraya yazın..." class="form-input-custom" style="resize:none; font-family: inherit;"></textarea>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top: 5px;">
+                <button type="submit" style="flex:2; background:#4f46e5; color:white; border:none; padding:12px; border-radius:10px; cursor:pointer; font-weight:600; font-size: 0.95rem;">Gönder</button>
+                <button type="button" onclick="document.getElementById('talepModal').style.display='none'"
+                        style="flex:1; background:#f1f5f9; color: #475569; border:none; padding:12px; border-radius:10px; cursor:pointer; font-weight: 600; font-size: 0.95rem;">
+                    İptal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.onclick = function(event) {
+        var modal = document.getElementById('talepModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>

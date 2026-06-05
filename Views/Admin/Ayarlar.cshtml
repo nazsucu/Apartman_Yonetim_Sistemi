@@ -1,0 +1,158 @@
+﻿@model ApartmanYonetimSistemi.Models.Yonetici
+@{ Layout = "_AdminLayout"; }
+
+<style>
+    .data-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    .data-card input { 
+        width: 100%; padding: 12px; margin: 8px 0 15px 0; 
+        border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; display: block;
+    }
+    .custom-table { width: 100%; border-collapse: collapse; }
+    .custom-table th { text-align: left; padding: 12px; border-bottom: 2px solid #f1f5f9; color: #64748b; }
+    .custom-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="background: #dcfce7; color: #166534; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #10b981;">
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+    </div>
+}
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
+    <div class="data-card">
+        <h3 style="margin-top:0; margin-bottom: 20px; color: #334155;"><i class="fas fa-building" style="color:#4f46e5;"></i> Kurumsal Bilgiler</h3>
+        <form asp-action="AyarlariGuncelle" method="post">
+            <label style="color:#64748b; font-size:0.9rem; font-weight:600;">Apartman Adı</label>
+            <input type="text" name="apartmanAdi" value="@Model?.ApartmanAdi">
+            
+            <label style="color:#64748b; font-size:0.9rem; font-weight:600;">Yönetim IBAN</label>
+            <input type="text" name="yonetimIban" value="@Model?.YonetimIban">
+            
+            <button type="submit" style="background: #4f46e5; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 600; cursor: pointer;">KAYDET</button>
+        </form>
+    </div>
+
+    <div class="data-card">
+        <h3 style="margin-top:0; margin-bottom: 20px; color: #334155;"><i class="fas fa-key" style="color:#f59e0b;"></i> Güvenlik Ayarları</h3>
+        
+        @if (TempData["Hata"] != null)
+        {
+            <div style="background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size:0.85rem;">
+                <i class="fas fa-exclamation-circle"></i> @TempData["Hata"]
+            </div>
+        }
+
+        <form asp-action="SifreGuncelle" method="post">
+            <label style="color:#64748b; font-size:0.9rem; font-weight:600;">Mevcut Şifre</label>
+            <input type="password" name="mevcutSifre" required placeholder="Şu anki şifreniz">
+            
+            <label style="color:#64748b; font-size:0.9rem; font-weight:600;">Yeni Şifre</label>
+            <input type="password" name="yeniSifre" required placeholder="En az 4 karakter">
+            
+            <label style="color:#64748b; font-size:0.9rem; font-weight:600;">Yeni Şifre (Tekrar)</label>
+            <input type="password" name="yeniSifreTekrar" required placeholder="Yeni şifreyi tekrar yazın">
+            
+            <button type="submit" style="background: #1e293b; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top:10px;">
+                ŞİFREYİ GÜNCELLE
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="data-card" style="grid-column: span 2; margin-top: 10px;">
+    <h3 style="margin-top:0; margin-bottom: 25px; color: #334155; display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-users-cog" style="color:#10b981;"></i> Yönetici Kadrosu
+    </h3>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; align-items: stretch;">
+        
+        <div style="background: #ffffff; border-right: 2px solid #f1f5f9; padding-right: 30px;">
+            <h4 style="margin-top:0; margin-bottom: 15px; color: #64748b; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Kayıtlı Yöneticiler</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; color: #94a3b8; font-size: 0.8rem; border-bottom: 1px solid #f1f5f9;">
+                        <th style="padding-bottom: 10px;">AD SOYAD / KULLANICI ADI</th>
+                        <th style="padding-bottom: 10px; text-align: center;">SİL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.TumYoneticiler != null)
+                    {
+                        foreach (var item in (List<ApartmanYonetimSistemi.Models.Yonetici>)ViewBag.TumYoneticiler)
+                        {
+                            <tr style="border-bottom: 1px solid #f8fafc;">
+                                <td style="padding: 15px 0;">
+                                    <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">@item.AdSoyad</div>
+                                    <div style="font-size: 0.8rem; color: #94a3b8;">@@@item.KullaniciAdi</div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <form id="yoneticiSilForm-@item.Id" asp-action="YoneticiSil" method="post" style="margin:0;">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="button" onclick="yoneticiSilOnay(@item.Id)" style="background:none; border:none; color:#f87171; cursor:pointer; font-size: 1.1rem; transition: 0.2s; padding: 5px;">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div style="background: #f8fafc; padding: 30px; border-radius: 15px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center;">
+            <h4 style="margin-top:0; margin-bottom: 25px; color: #475569; font-size: 1.1rem; font-weight: 600;">
+                <i class="fas fa-user-plus" style="margin-right:8px;"></i> Yeni Yönetici Ekle
+            </h4>
+            
+            <form asp-action="YoneticiEkle" method="post" style="display: flex; flex-direction: column; gap: 18px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="display:block; margin-bottom: 8px; font-size: 0.85rem; color: #64748b; font-weight: 600;">Ad Soyad</label>
+                        <input type="text" name="AdSoyad" placeholder="Ad Soyad" required 
+                               style="width: 100%; margin: 0; padding: 14px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom: 8px; font-size: 0.85rem; color: #64748b; font-weight: 600;">Kullanıcı Adı</label>
+                        <input type="text" name="KullaniciAdi" placeholder="Kullanıcı Adı" required 
+                               style="width: 100%; margin: 0; padding: 14px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box;">
+                    </div>
+                </div>
+                
+                <div>
+                    <label style="display:block; margin-bottom: 8px; font-size: 0.85rem; color: #64748b; font-weight: 600;">Şifre</label>
+                    <input type="password" name="Sifre" placeholder="••••••••" required 
+                           style="width: 100%; margin: 0; padding: 14px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box;">
+                </div>
+                
+                <button type="submit" style="background: #10b981; color: white; border: none; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px;">
+                    <i class="fas fa-save"></i> YÖNETİCİYİ KAYDET 
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function yoneticiSilOnay(id) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu yönetici hesabı kalıcı olarak silinecektir!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal',
+            background: '#ffffff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('yoneticiSilForm-' + id).submit();
+            }
+        });
+    }
+</script>

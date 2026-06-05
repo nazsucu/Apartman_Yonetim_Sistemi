@@ -1,0 +1,37 @@
+﻿@model List<ApartmanYonetimSistemi.Models.Duyuru>
+@{
+    Layout = "_SakinLayout";
+}
+
+<div class="stats-grid">
+  
+    <div class="stat-card">
+        <div class="stat-icon" style="background: #fff1f2; color: #e11d48;"><i class="fas fa-lira-sign"></i></div>
+        <div class="stat-info">
+            <span>TOPLAM BORCUNUZ</span>
+            <h3>₺@ViewBag.ToplamBorc.ToString("N2")</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: #eef2ff; color: #4f46e5;"><i class="fas fa-bullhorn"></i></div>
+        <div class="stat-info">
+            <span>YENİ DUYURULAR</span>
+            <h3>@Model.Count Adet</h3>
+        </div>
+    </div>
+</div>
+
+<div class="data-card">
+    <h4 style="margin-bottom:20px; color:#1e293b;"><i class="fas fa-newspaper" style="color:var(--admin-primary)"></i> Son Duyurular</h4>
+    @foreach (var item in Model)
+    {
+        <div class="duyuru-item">
+            <div style="display:flex; justify-content:space-between;">
+                <strong style="color:#334155;">@item.Baslik</strong>
+                <small style="color:#94a3b8;">@item.YayinTarihi.ToShortDateString()</small>
+            </div>
+            <p style="color:#64748b; font-size:0.9rem; margin-top:5px;">@item.Icerik</p>
+        </div>
+    }
+</div>

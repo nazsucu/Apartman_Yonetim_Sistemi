@@ -1,0 +1,113 @@
+﻿@model List<ApartmanYonetimSistemi.Models.ArizaTalebi>
+@{
+    Layout = "_AdminLayout";
+}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div style="padding: 5px 20px 20px 20px;">
+    
+    <h3 style="color: #334155; margin-top: 0; margin-bottom: 20px; font-weight: 700; font-size: 1.4rem;">
+        <i class="fas fa-wrench" style="color: #6366f1;"></i> Arıza ve Bakım Talepleri
+    </h3>
+    
+    <div style="background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); overflow: hidden; border: 1px solid #f1f5f9;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background: #f8fafc;">
+                <tr style="color: #64748b; font-size: 0.85rem; letter-spacing: 0.5px;">
+                    <th style="padding: 18px 20px; text-align: left;">Arıza Bildiren Sakin</th>
+                    <th style="padding: 18px 20px; text-align: left;">Arıza Konusu</th>
+                    <th style="padding: 18px 20px; text-align: left;">Arıza Açıklaması / Detay</th>
+                    <th style="padding: 18px 20px; text-align: left;">Durum</th>
+                    <th style="padding: 18px 20px; text-align: center;">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ariza in Model)
+                {
+                    <tr style="border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
+                        
+                        <td style="padding: 18px 20px;">
+                            <span style="background:#e0e7ff; color:#4f46e5; padding:6px 14px; border-radius:8px; font-weight:600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-user" style="font-size: 0.8rem;"></i> @ariza.SakinAd
+                            </span>
+                        </td>
+                        
+                        <td style="padding: 18px 20px; font-weight: 600; color: #1e293b; font-size: 0.95rem;">
+                            @ariza.Baslik
+                        </td>
+                        
+                        <td style="padding: 18px 20px; color: #64748b; font-size: 0.9rem; line-height: 1.4; font-style: italic;">
+                            @ariza.Aciklama
+                        </td>
+
+                        <td style="padding: 18px 20px;">
+                            <span style="padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
+                                background: @(ariza.Durum == "Beklemede" ? "#fffbeb" : "#f0fdf4"); color: @(ariza.Durum == "Beklemede" ? "#d97706" : "#16a34a");">
+                                <i class="@(ariza.Durum == "Beklemede" ? "fas fa-clock" : "fas fa-check-circle")"></i> @ariza.Durum
+                            </span>
+                        </td>
+
+                        <td style="padding: 18px 20px; text-align: center;">
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                                
+                                @if (ariza.Durum == "Beklemede")
+                                {
+                                    <form asp-action="ArizaCoz" asp-controller="Admin" method="post" style="margin: 0;">
+                                        <input type="hidden" name="id" value="@ariza.Id" />
+                                        <button type="submit" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 2px 6px rgba(16,185,129,0.2); transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                                            Çözüldü
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                   
+                                    <button type="button" disabled style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: default;">
+                                        Çözüldü
+                                    </button>
+                                }
+
+                                <form id="silForm-@ariza.Id" asp-action="ArizaSil" asp-controller="Admin" method="post" style="margin: 0;">
+                                    <input type="hidden" name="id" value="@ariza.Id" />
+                                    <button type="button" onclick="arizaSilOnay(@ariza.Id)" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 2px 6px rgba(239,68,68,0.2); transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                                        Sil
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" style="padding: 40px; text-align: center; color: #94a3b8;">
+                            <i class="fas fa-check-double" style="font-size: 2rem; color: #cbd5e1; display: block; margin-bottom: 10px;"></i>
+                            Bekleyen arıza kaydı bulunamadı.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function arizaSilOnay(id) {
+    Swal.fire({
+    title: 'Emin misiniz?',
+    text: "Bu arıza kaydı kalıcı olarak silinecektir!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Evet, Sil!',
+    cancelButtonText: 'İptal',
+    background: '#ffffff'
+    }).then((result) => {
+    if (result.isConfirmed) {
+    document.getElementById('silForm-' + id).submit();
+    }
+    })
+    }
+</script>

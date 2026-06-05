@@ -1,0 +1,45 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yönetici Girişi - AYS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div style="margin-bottom: 15px;">
+            <a href="/Home/Welcome" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-arrow-left"></i> Giriş Türüne Dön
+            </a>
+        </div>
+        <div style="text-align: center; color: #38bdf8; margin-bottom: 5px;">
+            <i class="fas fa-user-shield fa-3x"></i>
+        </div>
+        <h2 style="text-align:center; color:white; font-size:1.4rem; margin-bottom:25px; font-weight:600;">
+            Yönetici Girişi
+        </h2>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="A" placeholder="Yönetici Ad Soyad" required>
+            </div>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Şifre" required>
+            </div>
+            <button type="submit" class="login-btn">Giriş Yap</button>
+        </form>
+
+        <p id="message" style="margin-top:20px; text-align:center; min-height: 24px; font-size: 0.9rem;"></p>
+    </div>
+
+    <script src="/js/login.js"></script>
+</body>
+</html>

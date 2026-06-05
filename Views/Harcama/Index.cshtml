@@ -1,0 +1,132 @@
+﻿@model List<ApartmanYonetimSistemi.Models.Harcama>
+@{
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .form-control-custom {
+        width: 100%; padding: 10px 12px; margin-bottom: 12px;
+        border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; outline: none;
+        display: block;
+    }
+    .form-control-custom:focus { border-color: #ef4444; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1); }
+    
+    .btn-save-red {
+        padding: 12px 20px; background: #ef4444; color: white; border: none;
+        border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%;
+        transition: background 0.2s;
+    }
+    .btn-save-red:hover { background: #dc2626; }
+
+    .total-card {
+        padding: 25px; border-radius: 12px; text-align: center; 
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .form-label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85rem; color: #475569; }
+</style>
+
+@if (TempData["Mesaj"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({ 
+                title: 'İşlem Başarılı', 
+                text: '@TempData["Mesaj"]', 
+                icon: 'success', 
+                confirmButtonColor: '#ef4444' 
+            });
+        });
+    </script>
+}
+
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+    
+    <div class="data-card" style="border-top: 4px solid #ef4444;">
+        <h5 style="margin-bottom:15px;"><i class="fas fa-receipt" style="color: #ef4444;"></i> Yeni Gider</h5>
+        <form asp-action="Ekle" method="post">
+            <input type="text" name="Baslik" placeholder="Harcama Başlığı" class="form-control-custom" required />
+            <input type="number" name="Tutar" step="0.01" placeholder="Tutar (₺)" class="form-control-custom" required />
+            <select name="Kategori" class="form-control-custom">
+                <option value="Bakım/Onarım">Bakım / Onarım</option>
+                <option value="Temizlik">Temizlik</option>
+                <option value="Fatura">Fatura</option>
+                <option value="Personel">Personel</option>
+                <option value="Diğer">Diğer</option>
+            </select>
+            <button type="submit" class="btn-save-red"><i class="fas fa-save"></i> Kaydet</button>
+        </form>
+    </div>
+
+    <div class="total-card" style="background: #fff1f2; border: 1px solid #fecdd3;">
+        <span style="color:#9f1239; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Toplam Gider</span>
+        <h2 style="font-size: 2.2rem; color: #e11d48; margin: 10px 0;">
+            ₺@(((decimal)ViewBag.ToplamHarcama).ToString("N2"))
+        </h2>
+        <i class="fas fa-arrow-trend-down fa-2x" style="color: #fb7185;"></i>
+    </div>
+
+    @{
+        var bakiye = (decimal)ViewBag.KasaBakiye;
+        var bakiyeRenk = bakiye >= 0 ? "#15803d" : "#b91c1c";
+        var bakiyeBg = bakiye >= 0 ? "#f0fdf4" : "#fef2f2";
+    }
+    <div class="total-card" style="background: @bakiyeBg; border: 1px solid rgba(0,0,0,0.05);">
+        <span style="color: #475569; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Net Kasa Durumu</span>
+        <h2 style="font-size: 2.2rem; color: @bakiyeRenk; margin: 10px 0;">
+            ₺@bakiye.ToString("N2")
+        </h2>
+        <i class="fas fa-vault fa-2x" style="color: @bakiyeRenk; opacity: 0.5;"></i>
+    </div>
+</div>
+
+<div class="data-card">
+    <h4><i class="fas fa-history"></i> Harcama Geçmişi</h4>
+    <table class="custom-table" style="width:100%; margin-top:15px;">
+        <thead>
+            <tr style="text-align:left; border-bottom: 2px solid #f1f5f9;">
+                <th style="padding:12px;">Başlık</th>
+                <th style="padding:12px;">Kategori</th>
+                <th style="padding:12px;">Tutar</th>
+                <th style="padding:12px;">Tarih</th>
+                <th style="padding:12px; text-align:right;">İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var h in Model)
+            {
+                <tr style="border-bottom: 1px solid #f8fafc;">
+                    <td style="padding:12px;"><b>@h.Baslik</b></td>
+                    <td style="padding:12px;"><span style="background:#f1f5f9; padding:4px 8px; border-radius:4px; font-size:0.85rem;">@h.Kategori</span></td>
+                    <td style="padding:12px; color:#ef4444; font-weight:700;">-₺@h.Tutar.ToString("N2")</td>
+                    <td style="padding:12px;">@h.Tarih.ToShortDateString()</td>
+                    <td style="padding:12px; text-align:right;">
+                        <a href="javascript:void(0)" onclick="harcamaSil(@h.Id)" style="color:#ef4444; text-decoration:none;">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function harcamaSil(id) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Harcama kaydı silinecektir!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Sil',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Harcama/Sil/" + id;
+            }
+        });
+    }
+</script>
